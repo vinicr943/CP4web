@@ -1,77 +1,161 @@
 import { useState, useEffect } from "react"
 import "../css/estilo.css"
 
-
 const Tarefas = () => {
 
-    //Hook - useState - Manipula o estado da variavel
-    const [tarefas,setTarefas]=useState(()=>{
+    const [tarefas, setTarefas] = useState(() => {
         const salvarTarefas = localStorage.getItem("item-tarefa");
         return salvarTarefas ? JSON.parse(salvarTarefas) : [];
     });
 
+    const [campoNome, setCampoNome] = useState("");
+    const [campoData, setCampoData] = useState("");
+    const [campoDescricao, setCampoDescricao] = useState("");
+    const [campoPrioridade, setCampoPrioridade] = useState("Média");
 
-    const [campo,setCampo]=useState("");
-    //HOOK - useEffect - realiza o efeito colateral, nessse exemplo vai mostrar a tarefa adicionada em tempo real
-    useEffect(()=>{
-        localStorage.setItem("item-tarefa",JSON.stringify(tarefas))
-    },[tarefas])
+    useEffect(() => {
+        localStorage.setItem("item-tarefa", JSON.stringify(tarefas));
+    }, [tarefas]);
 
-    // função adicionar tarefa
-    const AdicionarTarefa =(e)=>{
-      // previne que a pagina recarregue automaticamente
-      e.preventDefault();
-      // valida se o campo estiver vazio
-      if(!campo.trim()) return;
+    const AdicionarTarefa = (e) => {
 
-      // novo objeto
-      const novaTarefa={
-        id: Date.now(),
-        texto:campo,
-      }
-      setTarefas([...tarefas,novaTarefa]);
-      setCampo('');
-    }
+        e.preventDefault();
 
-    //função remover tarefa
-    const removertarefa=(id)=>{
-      // verifica se o id da tarefa atual é diferente do id que deseja apagar
-      // se o id for iguaç(tarefa que deseja apagar) a condiçõa retorna falso e o item é excluido
-      const apagarTarefa = tarefas.filter((tarefa)=> tarefa.id !== id);
-      setTarefas(apagarTarefa);
+        if (!campoNome.trim()) return;
 
-    }
+        const novaTarefa = {
+            id: Date.now(),
+            nome: campoNome,
+            data: campoData,
+            descricao: campoDescricao,
+            prioridade: campoPrioridade,
+            concluida: false,
+        };
 
+        setTarefas([...tarefas, novaTarefa]);
 
-  return (
-    <div>
-      <h1>Minha Lista de Tarefas</h1>
-      <form onSubmit={AdicionarTarefa}>
-        <input 
-        type="text"
-        value={campo}
-        onChange={(e)=>setCampo(e.target.value)}
-        placeholder="Digite sua Tarefa" 
-        
-        />
-        <button type="submit">Adicionar</button>
-      </form>
+        setCampoNome("");
+        setCampoData("");
+        setCampoDescricao("");
+        setCampoPrioridade("Média");
+    };
 
-      <ul>
-        {tarefas.map((tarefa)=>(
-          <li key={tarefa.id} >
-            <span>{tarefa.texto}</span>
-            <button onClick={() => removertarefa(tarefa.id)} type="submit">Excluir</button>
+    const removerTarefa = (id) => {
 
-          </li>
-        ))}
+        const apagarTarefa = tarefas.filter(
+            (tarefa) => tarefa.id !== id
+        );
 
-      </ul >
-      {/* compara, se não tiver tarefas deixa a mensagem "nenhuma tarefa salva" */}
-      {tarefas.length === 0 && <p>Nenhuma Tarefa Salva</p>}
+        setTarefas(apagarTarefa);
+    };
 
-    </div>
-  )
-}
+    const concluirTarefa = (id) => {
 
-export default Tarefas
+        const tarefasAtualizadas = tarefas.map((tarefa) => {
+
+            if (tarefa.id === id) {
+                return {
+                    ...tarefa,
+                    concluida: !tarefa.concluida
+                };
+            }
+
+            return tarefa;
+        });
+
+        setTarefas(tarefasAtualizadas);
+    };
+
+    return (
+        <div>
+
+            <h1>Minha Lista de Tarefas</h1>
+
+            <form onSubmit={AdicionarTarefa}>
+
+                <input
+                    type="text"
+                    value={campoNome}
+                    onChange={(e) => setCampoNome(e.target.value)}
+                    placeholder="Nome da tarefa"
+                />
+
+                <input
+                    type="date"
+                    value={campoData}
+                    onChange={(e) => setCampoData(e.target.value)}
+                />
+
+                <input
+                    type="text"
+                    value={campoDescricao}
+                    onChange={(e) => setCampoDescricao(e.target.value)}
+                    placeholder="Descrição"
+                />
+
+                <select
+                    value={campoPrioridade}
+                    onChange={(e) => setCampoPrioridade(e.target.value)}
+                >
+                    <option value="Alta">Alta</option>
+                    <option value="Média">Média</option>
+                    <option value="Baixa">Baixa</option>
+                </select>
+
+                <button type="submit">
+                    Adicionar
+                </button>
+
+            </form>
+
+            <ul>
+
+                {tarefas.map((tarefa) => (
+
+                    <li key={tarefa.id}>
+
+                        <h3>{tarefa.nome}</h3>
+
+                        <p>Data: {tarefa.data}</p>
+
+                        <p>Descrição: {tarefa.descricao}</p>
+
+                        <p>Prioridade: {tarefa.prioridade}</p>
+
+                        <p>
+                            Status: {tarefa.concluida
+                                ? "Concluída"
+                                : "Pendente"
+                            }
+                        </p>
+
+                        <button
+                            onClick={() => concluirTarefa(tarefa.id)}
+                        >
+                            {tarefa.concluida
+                                ? "Desmarcar"
+                                : "Concluir"
+                            }
+                        </button>
+
+                        <button
+                            onClick={() => removerTarefa(tarefa.id)}
+                        >
+                            Excluir
+                        </button>
+
+                    </li>
+
+                ))}
+
+            </ul>
+
+            {tarefas.length === 0 && (
+                <p>Nenhuma Tarefa Salva</p>
+            )}
+
+        </div>
+    );
+};
+
+export default Tarefas;
