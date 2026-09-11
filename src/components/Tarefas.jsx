@@ -51,6 +51,19 @@ const Tarefas = () => {
         setTarefas(apagarTarefa);
     };
 
+    const concluirTarefa = (id) => {
+
+        const tarefasAtualizadas = tarefas.map((tarefa) => {
+
+            if (tarefa.id === id) {
+                return {
+                    ...tarefa,
+                    concluida: !tarefa.concluida
+                };
+            }
+
+            return tarefa;
+        });
 
         setTarefas(tarefasAtualizadas);
     };
