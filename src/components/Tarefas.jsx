@@ -13,6 +13,8 @@ const Tarefas = () => {
     const [campoDescricao, setCampoDescricao] = useState("");
     const [campoPrioridade, setCampoPrioridade] = useState("Média");
 
+    const [filtro, setFiltro] = useState("Todas");
+
     useEffect(() => {
         localStorage.setItem("item-tarefa", JSON.stringify(tarefas));
     }, [tarefas]);
@@ -49,22 +51,18 @@ const Tarefas = () => {
         setTarefas(apagarTarefa);
     };
 
-    const concluirTarefa = (id) => {
-
-        const tarefasAtualizadas = tarefas.map((tarefa) => {
-
-            if (tarefa.id === id) {
-                return {
-                    ...tarefa,
-                    concluida: !tarefa.concluida
-                };
-            }
-
-            return tarefa;
-        });
 
         setTarefas(tarefasAtualizadas);
     };
+
+    const tarefasFiltradas = tarefas.filter((tarefa) => {
+
+        if (filtro === "Pendentes") {
+            return !tarefa.concluida;
+        }
+
+        return true;
+    });
 
     return (
         <div>
@@ -108,9 +106,25 @@ const Tarefas = () => {
 
             </form>
 
+            <div>
+
+                <button onClick={() => setFiltro("Todas")}>
+                    Todas
+                </button>
+
+                <button onClick={() => setFiltro("Pendentes")}>
+                    Pendentes
+                </button>
+
+                <button onClick={() => setFiltro("Concluídas")}>
+                    Concluídas
+                </button>
+
+            </div>
+
             <ul>
 
-                {tarefas.map((tarefa) => (
+                {tarefasFiltradas.map((tarefa) => (
 
                     <li key={tarefa.id}>
 
@@ -150,8 +164,8 @@ const Tarefas = () => {
 
             </ul>
 
-            {tarefas.length === 0 && (
-                <p>Nenhuma Tarefa Salva</p>
+            {tarefasFiltradas.length === 0 && (
+                <p>Nenhuma Tarefa Encontrada</p>
             )}
 
         </div>
