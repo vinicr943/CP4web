@@ -3,6 +3,7 @@ import "../css/estilo.css"
 
 const Tarefas = () => {
 
+    // Hook useState - usado para criar e controlar o estado das tarefas
     const [tarefas, setTarefas] = useState(() => {
         const salvarTarefas = localStorage.getItem("item-tarefa");
         return salvarTarefas ? JSON.parse(salvarTarefas) : [];
@@ -15,9 +16,11 @@ const Tarefas = () => {
 
     const [filtro, setFiltro] = useState("Todas");
 
+    // Hook useEffect - executa uma função quando o estado tarefas é alterado
     useEffect(() => {
         localStorage.setItem("item-tarefa", JSON.stringify(tarefas));
     }, [tarefas]);
+
 
     const AdicionarTarefa = (e) => {
 
@@ -42,8 +45,10 @@ const Tarefas = () => {
         setCampoPrioridade("Média");
     };
 
+
     const removerTarefa = (id) => {
 
+        // Método filter - percorre o array e cria um novo array apenas com os elementos que atendem à condição
         const apagarTarefa = tarefas.filter(
             (tarefa) => tarefa.id !== id
         );
@@ -51,8 +56,10 @@ const Tarefas = () => {
         setTarefas(apagarTarefa);
     };
 
+
     const concluirTarefa = (id) => {
 
+        // Método map - percorre o array e cria um novo array modificando os elementos necessários
         const tarefasAtualizadas = tarefas.map((tarefa) => {
 
             if (tarefa.id === id) {
@@ -68,6 +75,8 @@ const Tarefas = () => {
         setTarefas(tarefasAtualizadas);
     };
 
+
+    // Callback - função passada para o método filter para ser executada em cada tarefa
     const tarefasFiltradas = tarefas.filter((tarefa) => {
 
         if (filtro === "Pendentes") {
@@ -80,6 +89,7 @@ const Tarefas = () => {
 
         return true;
     });
+
 
     return (
         <div>
@@ -141,6 +151,7 @@ const Tarefas = () => {
 
             <ul>
 
+                {/* Callback - função passada para o map, executada para cada tarefa do array */}
                 {tarefasFiltradas.map((tarefa) => (
 
                     <li key={tarefa.id}>
