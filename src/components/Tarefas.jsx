@@ -74,6 +74,10 @@ const Tarefas = () => {
             return !tarefa.concluida;
         }
 
+        if (filtro === "Concluídas") {
+            return tarefa.concluida;
+        }
+
         return true;
     });
 
